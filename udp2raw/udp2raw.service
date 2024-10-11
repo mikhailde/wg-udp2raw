@@ -1,0 +1,10 @@
+[Unit]
+Description=udp2raw service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/udp2raw --conf-file /etc/udp2raw/udp2raw.conf
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

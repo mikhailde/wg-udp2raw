@@ -1,0 +1,36 @@
+services:
+  wg-easy:
+    image: ghcr.io/wg-easy/wg-easy:latest
+    container_name: wg-easy
+    restart: unless-stopped
+    environment:
+      LANG: ru # For english change to en
+      PASSWORD_HASH: # Run this to create a password for web: docker run -it --rm ghcr.io/wg-easy/wg-easy wgpw password
+      WG_HOST: 127.0.0.1
+      WG_PORT: 51820
+      PORT: 51821
+      UI_TRAFFIC_STATS: "true"
+      WG_MTU: 1200
+    volumes:
+      - ./data:/etc/wireguard
+    ports:
+      - "51820:51820/udp"
+      - "51821:51821/tcp"
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+  udp2raw:
+    build: .
+    container_name: udp2raw
+    restart: unless-stopped
+    environment:
+      UDP2RAW_LISTEN_PORT: # YOUR_PORT
+      WIREGUARD_PORT: 51820
+      UDP2RAW_KEY: # YOUR_SECRET_KEY
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    network_mode: "host"

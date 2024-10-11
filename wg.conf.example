@@ -1,0 +1,15 @@
+
+[Interface]
+PrivateKey = # Generate a private key: wg genkey
+Address = 10.8.0.2/24
+DNS = 1.1.1.1
+MTU = 1200
+PreUp = ip route add YOUR_SERVER_IP via $(ip route | grep default | awk '{print $3}') && systemctl start udp2raw.service
+PostDown = ip route del YOUR_SERVER_IP && systemctl stop udp2raw.service
+
+[Peer]
+PublicKey = # Generate a public key from the private key above: wg pubkey < privatekey
+PresharedKey = # Generate a preshared key: wg genpsk
+AllowedIPs = 0.0.0.0/0
+PersistentKeepalive = 0
+Endpoint = 127.0.0.1:51820
