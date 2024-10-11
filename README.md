@@ -17,7 +17,7 @@
    * `UDP2RAW_LISTEN_PORT/tcp` (порт, который вы укажете для udp2raw в `docker-compose.yml`)
 2. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/your-username/wireguard-udp2raw.git
+   git clone https://github.com/mikhailde/wireguard-udp2raw.git
    ```
 3. Заполните плейсхолдеры в файле `docker-compose.yml`:
    * `UDP2RAW_LISTEN_PORT` (порт, на котором будет слушать udp2raw)
