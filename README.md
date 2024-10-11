@@ -1,52 +1,55 @@
-# Wireguard with udp2raw
+# Wireguard VPN with udp2raw obfuscation
 
-Этот проект предоставляет простую настройку Wireguard с использованием udp2raw для обхода блокировок.
+This project provides a simple setup for a Wireguard VPN with udp2raw obfuscation to bypass network restrictions.
 
-## Особенности
+## Features
 
-* Легкая установка с помощью Docker Compose.
-* Web-интерфейс для управления Wireguard (wg-easy).
-* udp2raw для обфускации трафика.
-* Автоматический запуск и перезапуск сервисов.
-* **Возможность создания полноценной VPN-сети**, в отличие от простых прокси-шлюзов, таких как shadowsocks или v2ray.
+* Easy setup with Docker Compose.
+* Web interface for Wireguard management (wg-easy).
+* udp2raw for traffic obfuscation.
+* Automatic service startup and restart.
+* **Ability to create a full-fledged VPN network**, unlike simple proxy gateways like shadowsocks or v2ray.
 
-## Установка сервера
+## Server setup
 
-1. **Откройте порты на вашем сервере:**
-   * `51821/tcp` (для web-интерфейса, если не меняли порт в `docker-compose.yml`)
-   * `UDP2RAW_LISTEN_PORT/tcp` (порт, который вы укажете для udp2raw в `docker-compose.yml`)
-2. Клонируйте репозиторий:
+1. **Open ports on your server:**
+   * `51821/tcp` (for web UI, unless changed in `docker-compose.yml`)
+   * `UDP2RAW_LISTEN_PORT/tcp` (the port you specify for udp2raw in `docker-compose.yml`)
+2. Clone the repository:
    ```bash
-   git clone https://github.com/mikhailde/wireguard-udp2raw.git
+   git clone https://github.com/mikhailde/wg-udp2raw.git
    ```
-3. Заполните плейсхолдеры в файле `docker-compose.yml`:
-   * `UDP2RAW_LISTEN_PORT` (порт, на котором будет слушать udp2raw)
-   * `UDP2RAW_KEY` (секретный ключ для udp2raw)
-   * `PASSWORD_HASH` (хэш пароля для доступа к web-интерфейсу, генерируется командой:
+3. Fill in the placeholders in `docker-compose.yml`:
+   * `UDP2RAW_LISTEN_PORT` (port for udp2raw)
+   * `UDP2RAW_KEY` (secret key for udp2raw)
+   * `PASSWORD_HASH` (password hash for web UI access, generate with:
      `docker run -it --rm ghcr.io/wg-easy/wg-easy wgpw password`)
-4. Запустите Docker Compose:
+4. Start Docker Compose:
    ```bash
    docker-compose up -d
    ```
 
-## Настройка клиента
+## Client setup
 
-1. Скачайте udp2raw для вашей системы с [релизов](https://github.com/wangyu-/udp2raw/releases).
-2. Скопируйте файл `udp2raw.service` из репозитория в `/etc/systemd/system/`.
-3. Скопируйте файл `udp2raw/udp2raw.conf` из репозитория в `/etc/udp2raw/`.
-4. Заполните плейсхолдеры в файле `/etc/udp2raw/udp2raw.conf`:
-   * `YOUR_SERVER_IP` (публичный IP или доменное имя вашего сервера)
-   * `SERVER_PORT` (порт, на котором слушает udp2raw на сервере, тот же, что и `UDP2RAW_LISTEN_PORT` в `docker-compose.yml`)
-   * `YOUR_KEY` (секретный ключ для udp2raw, тот же, что и в `docker-compose.yml`)
-5. Откройте web-интерфейс Wireguard по адресу `http://YOUR_SERVER_IP:51821` и создайте нового клиента.
-6. Скачайте конфигурационный файл клиента и сохраните его как `/etc/wireguard/wg0.conf`.
-7. Добавьте следующие строки в раздел `[Interface]` файла `/etc/wireguard/wg0.conf`:
+1. Download udp2raw for your system from the [releases](https://github.com/wangyu-/udp2raw/releases).
+2. Copy `udp2raw.service` and `udp2raw/udp2raw.conf` from the repository to `/etc/systemd/system/` and `/etc/udp2raw/` respectively.
+3. Fill in the placeholders in `/etc/udp2raw/udp2raw.conf`:
+   * `YOUR_SERVER_IP` (your server's public IP or domain name)
+   * `SERVER_PORT` (udp2raw listening port on the server, same as `UDP2RAW_LISTEN_PORT` in `docker-compose.yml`)
+   * `YOUR_KEY` (secret key for udp2raw, same as in `docker-compose.yml`)
+4. Open the Wireguard web UI at `http://YOUR_SERVER_IP:51821` and create a new client.
+5. Download the client configuration file and save it as `/etc/wireguard/wg0.conf`.
+6. Add the following lines to the `[Interface]` section of `/etc/wireguard/wg0.conf`:
    ```
    PreUp = ip route add YOUR_SERVER_IP via $(ip route | grep default | awk '{print $3}') && systemctl start udp2raw
    PostDown = ip route del YOUR_SERVER_IP && systemctl stop udp2raw
    ```
-   Замените `YOUR_SERVER_IP` на публичный IP или доменное имя вашего сервера.
-8. Подключитесь к VPN:
+   Replace `YOUR_SERVER_IP` with your server's public IP or domain name.
+7. Connect to the VPN:
    ```bash
    sudo wg-quick up wg0
    ```
+
+## Additional information
+
+* More information about wg-easy configuration can be found [here](https://github.com/wg-easy/wg-easy).
