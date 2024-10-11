@@ -23,10 +23,9 @@
    * `UDP2RAW_LISTEN_PORT` (порт, на котором будет слушать udp2raw)
    * `UDP2RAW_KEY` (секретный ключ для udp2raw)
    * `PASSWORD_HASH` (хэш пароля для доступа к web-интерфейсу, генерируется командой:
-     ```bash
+     `
      docker run -it --rm ghcr.io/wg-easy/wg-easy wgpw password
-     ```
-     )
+     `
 4. Запустите Docker Compose:
    ```bash
    docker-compose up -d
