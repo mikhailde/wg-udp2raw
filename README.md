@@ -1,4 +1,4 @@
-# Wireguard VPN with udp2raw obfuscation
+## Wireguard VPN with udp2raw obfuscation
 
 This project provides a simple setup for a Wireguard VPN with udp2raw obfuscation to bypass network restrictions.
 
@@ -39,13 +39,18 @@ This project provides a simple setup for a Wireguard VPN with udp2raw obfuscatio
    * `YOUR_KEY` (secret key for udp2raw, same as in `docker-compose.yml`)
 4. Open the Wireguard web UI at `http://YOUR_SERVER_IP:51821` and create a new client.
 5. Download the client configuration file and save it as `/etc/wireguard/wg0.conf`.
-6. Add the following lines to the `[Interface]` section of `/etc/wireguard/wg0.conf`:
+6. **Important:** In the `[Peer]` section of your client configuration (`wg0.conf`), ensure that only the following is included in `AllowedIPs`:
+   ```
+   AllowedIPs = 0.0.0.0/0
+   ```
+   This means you should remove any IPv6 addresses to avoid potential connectivity issues.
+7. Add the following lines to the `[Interface]` section of `/etc/wireguard/wg0.conf`:
    ```
    PreUp = ip route add YOUR_SERVER_IP via $(ip route | grep default | awk '{print $3}') && systemctl start udp2raw
    PostDown = ip route del YOUR_SERVER_IP && systemctl stop udp2raw
    ```
    Replace `YOUR_SERVER_IP` with your server's public IP or domain name.
-7. Connect to the VPN:
+8. Connect to the VPN:
    ```bash
    sudo wg-quick up wg0
    ```

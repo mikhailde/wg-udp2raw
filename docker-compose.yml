@@ -12,7 +12,7 @@ services:
       UI_TRAFFIC_STATS: "true"
       WG_MTU: 1200
     volumes:
-      - ./data:/etc/wireguard
+      - wg-easy-data:/etc/wireguard
     ports:
       - "51820:51820/udp"
       - "51821:51821/tcp"
@@ -34,3 +34,6 @@ services:
       - NET_ADMIN
       - NET_RAW
     network_mode: "host"
+
+volumes:
+  wg-easy-data:
